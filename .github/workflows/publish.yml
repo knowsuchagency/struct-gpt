@@ -30,7 +30,11 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install pdm
         pdm install
-    # TODO: add tests
+    - name: Run tests
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        pytest tests/
     - name: Publish to pypi
       run: |
         pdm self add 'urllib3<2' # TODO: remove this when the bug is fixed
