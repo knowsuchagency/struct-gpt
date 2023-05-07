@@ -1,18 +1,21 @@
 import io
 import json
 import logging
-from typing import TypeVar, Literal, Mapping
+from typing import TypeVar, TypedDict
 
 import openai
 from pydantic import BaseModel, Field, ValidationError
 from ruamel.yaml import YAML
 
 Model = TypeVar("Model", bound=BaseModel)
-Example = Mapping[Literal["input", "output"], str]
 
 yaml = YAML(typ="safe")
 
 logger = logging.getLogger(__name__)
+
+class Example(TypedDict):
+    input: str
+    output: str
 
 
 class OpenAiMixin:
