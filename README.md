@@ -110,3 +110,42 @@ outputs:
   "narrator": "president"
 }
 ```
+
+## Improving reliability with examples
+
+`create` can accept a list of examples to guide the model and improve its accuracy. Each example is a dictionary containing an `input` and `output` key. The `input` is the user message and the `output` is the expected assistant message, which should be a valid instance of the schema serialized as a string.
+
+In this example, we are providing the model with examples of positive and negative sentiments:
+
+```python
+from struct_gpt import OpenAiBase
+from pydantic import Field
+
+class SentimentSchema(OpenAiBase):
+    """
+    Determine the sentiment of the given text:
+
+    {content}
+    """
+
+    sentiment: str = Field(description="Either -1, 0, or 1.")
+
+examples = [
+    {
+        "input": "this library is neat!",
+        "output": SentimentSchema(sentiment="1").json(),
+    },
+    {
+        "input": "don't touch that",
+        "output": SentimentSchema(sentiment="-1").json(),
+    },
+]
+
+print(SentimentSchema.create(content="I love pizza!", examples=examples).json())
+```
+outputs:
+```json
+{
+  "sentiment": "1"
+}
+```
