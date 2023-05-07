@@ -1,5 +1,7 @@
 # struct-gpt
 
+[![codecov](https://codecov.io/gh/knowsuchagency/struct-gpt/branch/main/graph/badge.svg?token=TMUQNTCTDI)](https://codecov.io/gh/knowsuchagency/struct-gpt)
+
 ## Features
 
 * Easy creation of custom models using the OpenAI API
