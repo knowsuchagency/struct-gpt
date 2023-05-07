@@ -1,5 +1,11 @@
 # struct-gpt
 
+## Features
+
+* Easy creation of custom models using the OpenAI API
+* Integration with Pydantic for model validation and serialization
+* Flexible configuration with retries and temperature settings
+
 ## Usage
 
 Template variables in the class' docstring are replaced with the keyword arguments passed to `create`.
