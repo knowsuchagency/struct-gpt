@@ -7,7 +7,7 @@ dev = [
 ]
 [project]
 name = "struct-gpt"
-version = "2.0.0"
+version = "2.0.1"
 description = "structured llm outputs"
 authors = [
     {name = "Stephan Fitzpatrick", email = "knowsuchagency@gmail.com"},
@@ -19,7 +19,7 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 readme = "README.md"
-license = {text = "MIT"}
+license = {file = "LICENSE"}
 
 [project.urls]
 Source = "https://github.com/knowsuchagency/struct-gpt"
