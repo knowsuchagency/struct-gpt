@@ -1,5 +1,6 @@
 # struct-gpt
 
+
 [![codecov](https://codecov.io/gh/knowsuchagency/struct-gpt/branch/main/graph/badge.svg?token=TMUQNTCTDI)](https://codecov.io/gh/knowsuchagency/struct-gpt)
 
 ## Features
@@ -20,6 +21,7 @@ Template variables in the class' docstring are replaced with the keyword argumen
 from struct_gpt import OpenAiBase
 from pydantic import Field
 
+
 class SentimentSchema(OpenAiBase):
     """
     Determine the sentiment of the given text:
@@ -29,7 +31,8 @@ class SentimentSchema(OpenAiBase):
 
     sentiment: str = Field(description="Either -1, 0, or 1.")
 
-print(SentimentSchema.create(content="I love pizza!").json())
+
+print(SentimentSchema.from_openai(content="I love pizza!").json())
 ```
 outputs:
 ```json
@@ -45,6 +48,7 @@ from struct_gpt import OpenAiBase, OpenAiMixin
 from pydantic import Field, BaseModel
 from typing import Mapping
 
+
 class SentimentSchema(OpenAiBase):
     """
     Determine the sentiment of the given text:
@@ -53,6 +57,7 @@ class SentimentSchema(OpenAiBase):
     """
 
     sentiment: str = Field(description="Either -1, 0, or 1.")
+
 
 # you can use the OpenAiMixin to add functionality to your own classes
 class SentimentAnalysis(BaseModel, OpenAiMixin):
@@ -68,7 +73,7 @@ class SentimentAnalysis(BaseModel, OpenAiMixin):
 
 
 print(
-    SentimentAnalysis.create(
+    SentimentAnalysis.from_openai(
         text="As president, I loved the beautiful scenery, but the long hike was exhausting."
     ).json(indent=2)
 )
@@ -135,6 +140,7 @@ In this example, we are providing the model with examples of positive and negati
 from struct_gpt import OpenAiBase
 from pydantic import Field
 
+
 class SentimentSchema(OpenAiBase):
     """
     Determine the sentiment of the given text:
@@ -143,6 +149,7 @@ class SentimentSchema(OpenAiBase):
     """
 
     sentiment: str = Field(description="Either -1, 0, or 1.")
+
 
 examples = [
     {
@@ -155,7 +162,7 @@ examples = [
     },
 ]
 
-print(SentimentSchema.create(content="I love pizza!", examples=examples).json())
+print(SentimentSchema.from_openai(content="I love pizza!", examples=examples).json())
 ```
 outputs:
 ```json

@@ -40,11 +40,11 @@ class SentimentAnalysis(BaseModel, OpenAiMixin):
     narrator: str
 
 def test_SentimentSchema_create():
-    sentiment = SentimentSchema.create(content="I love pizza!", examples=EXAMPLES)
+    sentiment = SentimentSchema.from_openai(content="I love pizza!", examples=EXAMPLES)
     assert sentiment.sentiment == "1"
 
 def test_SentimentAnalysis_create():
-    sentiment_analysis = SentimentAnalysis.create(
+    sentiment_analysis = SentimentAnalysis.from_openai(
         text="As president, I loved the beautiful scenery, but the long hike was exhausting.",
         examples=EXAMPLES
     )
@@ -56,11 +56,11 @@ def test_SentimentAnalysis_create():
 def test_create_with_no_examples_or_kwargs():
     with pytest.raises(AssertionError):
         # call create without providing examples or kwargs
-        SentimentSchema.create()
+        SentimentSchema.from_openai()
 
 def test_no_docstring_raises_exception():
     with pytest.raises(AssertionError) as e:
-        OpenAiBase.create(content="I love pizza!", examples=EXAMPLES)
+        OpenAiBase.from_openai(content="I love pizza!", examples=EXAMPLES)
         assert "please add a docstring" in str(e)
 
 def test_incorrect_example_format_raises_exception():
@@ -76,7 +76,7 @@ def test_incorrect_example_format_raises_exception():
     ]
 
     with pytest.raises(KeyError):
-        SentimentSchema.create(content="I love pizza!", examples=incorrect_examples)
+        SentimentSchema.from_openai(content="I love pizza!", examples=incorrect_examples)
 
 @mock.patch("openai.ChatCompletion.create")
 def test_openai_api_failure_raises_exception(mock_chat_completion):
@@ -88,18 +88,18 @@ def test_openai_api_failure_raises_exception(mock_chat_completion):
 
     # Act and Assert: Ensure that the OpenAI error is propagated
     with pytest.raises(OpenAiError):
-        SentimentSchema.create(content="I love pizza!", examples=EXAMPLES)
+        SentimentSchema.from_openai(content="I love pizza!", examples=EXAMPLES)
 
 def test_create_with_invalid_temperature_raises_exception():
     with pytest.raises(AssertionError):
         # temperature should be between 0 and 1
-        SentimentSchema.create(content="I love pizza!", examples=EXAMPLES, temperature=-1)
+        SentimentSchema.from_openai(content="I love pizza!", examples=EXAMPLES, temperature=-1)
 
 
 def test_create_with_invalid_retries_raises_exception():
     with pytest.raises(AssertionError):
         # retries should be a non-negative integer
-        SentimentSchema.create(content="I love pizza!", examples=EXAMPLES, retries=-1)
+        SentimentSchema.from_openai(content="I love pizza!", examples=EXAMPLES, retries=-1)
 
 def test_create_with_invalid_json():
     class DummyModel(BaseModel, OpenAiMixin):
@@ -127,4 +127,4 @@ def test_create_with_invalid_json():
         }
 
         with pytest.raises(ValidationError):
-            DummyModel.create(content="")
+            DummyModel.from_openai(content="")

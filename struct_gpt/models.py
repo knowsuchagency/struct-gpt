@@ -21,7 +21,7 @@ class Example(TypedDict):
 
 class OpenAiMixin:
     @classmethod
-    def create(
+    def from_openai(
         cls: Model,
         temperature=0,
         model="gpt-3.5-turbo",
