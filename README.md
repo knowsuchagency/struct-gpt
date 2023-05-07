@@ -2,6 +2,7 @@
 
 
 [![codecov](https://codecov.io/gh/knowsuchagency/struct-gpt/branch/main/graph/badge.svg?token=TMUQNTCTDI)](https://codecov.io/gh/knowsuchagency/struct-gpt)
+[![PyPI version](https://badge.fury.io/py/struct-gpt.svg)](https://pypi.org/project/struct-gpt/)
 
 ## Features
 
