@@ -33,4 +33,4 @@ jobs:
     - name: Publish to pypi
       run: |
         pdm self add 'urllib3<2' # TODO: remove this when the bug is fixed
-        pdm publish
+        pdm publish -u {{ secrets.PDM_PUBLISH_USERNAME }} -P {{ secrets.PDM_PUBLISH_PASSWORD }}
