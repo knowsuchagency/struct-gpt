@@ -1,0 +1,21 @@
+[tool.pdm]
+
+[project]
+name = "struct-gpt"
+version = "0.1.0"
+description = "structured llm outputs"
+authors = [
+    {name = "Stephan Fitzpatrick", email = "knowsuchagency@gmail.com"},
+]
+dependencies = [
+    "openai>=0.27.6",
+    "pydantic>=1.10.7",
+    "ruamel-yaml>=0.17.24",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
