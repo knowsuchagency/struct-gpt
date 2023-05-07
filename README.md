@@ -63,7 +63,9 @@ print(
     ).json(indent=2)
 )
 ```
-outputs:
+<details>
+<summary>outputs</summary>
+
 ```json
 {
   "words_to_sentiment": {
@@ -110,6 +112,8 @@ outputs:
   "narrator": "president"
 }
 ```
+
+</details>
 
 ## Improving reliability with examples
 
