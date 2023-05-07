@@ -8,6 +8,10 @@
 
 ## Usage
 
+`pip install struct-gpt`
+
+---
+
 Template variables in the class' docstring are replaced with the keyword arguments passed to `create`.
 
 ```python
