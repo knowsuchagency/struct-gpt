@@ -1,7 +1,5 @@
 # struct-gpt
 
-structured llm outputs
-
 ## Usage
 
 Template variables in the class' docstring are replaced with the keyword arguments passed to `create`.
