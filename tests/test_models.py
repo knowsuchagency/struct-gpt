@@ -1,7 +1,9 @@
+import json
 from typing import Mapping
+from unittest import mock
 
 import pytest
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, ValidationError
 
 from struct_gpt.models import OpenAiBase, OpenAiMixin
 
@@ -60,3 +62,69 @@ def test_no_docstring_raises_exception():
     with pytest.raises(AssertionError) as e:
         OpenAiBase.create(content="I love pizza!", examples=EXAMPLES)
         assert "please add a docstring" in str(e)
+
+def test_incorrect_example_format_raises_exception():
+    incorrect_examples = [
+        {
+            "input": "this library is neat!",
+            # missing output key
+        },
+        {
+            # missing input key
+            "output": '{"sentiment": "1"}',
+        },
+    ]
+
+    with pytest.raises(KeyError):
+        SentimentSchema.create(content="I love pizza!", examples=incorrect_examples)
+
+@mock.patch("openai.ChatCompletion.create")
+def test_openai_api_failure_raises_exception(mock_chat_completion):
+    # Arrange: Mock the OpenAI API to simulate a failure
+    class OpenAiError(Exception):
+        pass
+
+    mock_chat_completion.side_effect = OpenAiError("API request failed")
+
+    # Act and Assert: Ensure that the OpenAI error is propagated
+    with pytest.raises(OpenAiError):
+        SentimentSchema.create(content="I love pizza!", examples=EXAMPLES)
+
+def test_create_with_invalid_temperature_raises_exception():
+    with pytest.raises(AssertionError):
+        # temperature should be between 0 and 1
+        SentimentSchema.create(content="I love pizza!", examples=EXAMPLES, temperature=-1)
+
+
+def test_create_with_invalid_retries_raises_exception():
+    with pytest.raises(AssertionError):
+        # retries should be a non-negative integer
+        SentimentSchema.create(content="I love pizza!", examples=EXAMPLES, retries=-1)
+
+def test_create_with_invalid_json():
+    class DummyModel(BaseModel, OpenAiMixin):
+        """
+        Example model for testing
+
+        {content}
+        """
+        field1: str
+        field2: int
+
+    # Mock the OpenAI API to return a JSON that doesn't match the model
+    with mock.patch('openai.ChatCompletion.create') as mock_create:
+        mock_create.return_value = {
+            "choices": [
+                {
+                    "message": {
+                        "content": json.dumps({
+                            "field1": "valid string",  # this is valid
+                            "field2": "invalid string",  # this should be an int
+                        })
+                    }
+                }
+            ]
+        }
+
+        with pytest.raises(ValidationError):
+            DummyModel.create(content="")

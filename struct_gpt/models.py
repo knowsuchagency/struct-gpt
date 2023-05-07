@@ -4,7 +4,7 @@ import logging
 from typing import TypeVar, TypedDict
 
 import openai
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 from ruamel.yaml import YAML
 
 Model = TypeVar("Model", bound=BaseModel)
@@ -50,6 +50,10 @@ class OpenAiMixin:
             examples or kwargs
         ), "please provide either examples or keyword args for the docstring"
 
+        assert 0 <= temperature <= 1, "temperature should be between 0 and 1"
+
+        assert retries >= 0, "retries should be a positive integer"
+
         # Convert the JSON schema to YAML since it takes up fewer tokens
         with io.StringIO() as fp:
             json_schema = json.loads(cls.schema_json())
@@ -83,7 +87,7 @@ class OpenAiMixin:
         last_exception = None
 
         # Retry the specified number of times in case of failure
-        while attempt < retries:
+        while attempt <= retries:
             try:
                 content = openai.ChatCompletion.create(
                     messages=messages,
