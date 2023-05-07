@@ -13,6 +13,7 @@ yaml = YAML(typ="safe")
 
 logger = logging.getLogger(__name__)
 
+
 class Example(TypedDict):
     input: str
     output: str
@@ -41,7 +42,7 @@ class OpenAiMixin:
         Returns:
             Model instance.
         """
-        assert (
+        assert cls.__doc__ and (
             doc := cls.__doc__.strip()
         ), "please add a docstring explaining how to destructure the prompt"
 
@@ -117,40 +118,3 @@ class OpenAiMixin:
 
 class OpenAiBase(BaseModel, OpenAiMixin):
     ...
-
-
-if __name__ == "__main__":
-
-    class SentimentSchema(OpenAiBase):
-        """
-        Determine the sentiment of the given text:
-
-        {content}
-        """
-
-        sentiment: str = Field(description="Either -1, 0, or 1.")
-
-    examples = [
-        {
-            "input": "this library is neat!",
-            "output": SentimentSchema(sentiment="1").json(),
-        },
-        {
-            "input": "don't touch that",
-            "output": SentimentSchema(sentiment="-1").json(),
-        },
-    ]
-
-    positive = SentimentSchema.create(
-        content="I love pizza!",
-    )
-    negative = SentimentSchema.create(
-        content="I hate pizza!",
-        examples=examples,
-    )
-
-    print(f"{positive = }")
-    print(f"{negative = }")
-    # outputs:
-    # positive = SentimentSchema(sentiment='1')
-    # negative = SentimentSchema(sentiment='-1')

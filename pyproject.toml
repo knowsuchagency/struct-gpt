@@ -1,5 +1,9 @@
 [tool.pdm]
 
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=7.3.1",
+]
 [project]
 name = "struct-gpt"
 version = "0.2.2"
