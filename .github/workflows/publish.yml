@@ -32,4 +32,5 @@ jobs:
         pdm install
     - name: Publish to pypi
       run: |
+        pdm self add 'urllib3<2' # TODO: remove this when the bug is fixed
         pdm publish
