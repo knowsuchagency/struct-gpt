@@ -34,7 +34,7 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        pytest tests/
+        pdm run pytest tests/
     - name: Publish to pypi
       run: |
         pdm self add 'urllib3<2' # TODO: remove this when the bug is fixed
