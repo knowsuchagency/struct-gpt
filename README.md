@@ -62,7 +62,7 @@ class SentimentAnalysis(BaseModel, OpenAiMixin):
 
     words_to_sentiment: Mapping[str, SentimentSchema]
     overall_sentiment: SentimentSchema
-    narrator: str = Field(description="The narrator of the text.")
+    narrator: str
 
 
 print(

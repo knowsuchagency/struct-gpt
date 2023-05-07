@@ -35,7 +35,7 @@ class SentimentAnalysis(BaseModel, OpenAiMixin):
 
     words_to_sentiment: Mapping[str, SentimentSchema]
     overall_sentiment: SentimentSchema
-    narrator: str = Field(description="The narrator of the text.")
+    narrator: str
 
 def test_SentimentSchema_create():
     sentiment = SentimentSchema.create(content="I love pizza!", examples=EXAMPLES)
