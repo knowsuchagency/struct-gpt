@@ -35,6 +35,7 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
         pdm run coverage run -m pytest tests/
+        pdm run coverage json
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
     - name: Publish to pypi
