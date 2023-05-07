@@ -17,8 +17,13 @@ class SentimentSchema(OpenAiBase):
 
     sentiment: str = Field(description="Either -1, 0, or 1.")
 
-positive = SentimentSchema.create(content="I love pizza!")
-print(f"{positive = }") # positive = SentimentSchema(sentiment='1')
+print(SentimentSchema.create(content="I love pizza!").json())
+```
+outputs:
+```json
+{
+  "sentiment": "1"
+}
 ```
 
 ```python
@@ -30,7 +35,9 @@ class SentimentAnalysis(OpenAiBase):
     sentiment: Mapping[str, SentimentSchema]
 
 
-analysis = SentimentAnalysis.create(text="I love the beautiful scenery, but the long hike was exhausting.")
+analysis = SentimentAnalysis.create(
+    text="I love the beautiful scenery, but the long hike was exhausting."
+)
 print(analysis.json(indent=2))
 ```
 outputs:
