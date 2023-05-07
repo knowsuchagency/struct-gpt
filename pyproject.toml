@@ -2,7 +2,7 @@
 
 [project]
 name = "struct-gpt"
-version = "0.1.2"
+version = "0.2.0"
 description = "structured llm outputs"
 authors = [
     {name = "Stephan Fitzpatrick", email = "knowsuchagency@gmail.com"},
