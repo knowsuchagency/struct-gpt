@@ -16,7 +16,7 @@
 
 ---
 
-Template variables in the class' docstring are replaced with the keyword arguments passed to `create`.
+Template variables in the class' docstring are replaced with the keyword arguments passed to `from_openai`.
 
 ```python
 from struct_gpt import OpenAiBase
