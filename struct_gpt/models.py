@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+from pprint import pprint
 from typing import TypeVar, TypedDict
 
 import openai
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Example(TypedDict):
     input: str
-    output: str
+    output: str | Model
 
 
 class OpenAiMixin:
@@ -61,9 +62,15 @@ class OpenAiMixin:
             yaml_json_schema = fp.getvalue()
 
         # Set up the system message to guide the assistant
+        directions = [
+            f"Please respond ONLY with valid json that conforms to this json_schema:",
+            yaml_json_schema,
+            "Don't include additional text other than the object. It gets deserialized with pydantic_model.parse_raw",
+        ]
+
         system_message = {
             "role": "system",
-            "content": f"Please respond ONLY with valid json that conforms to this json_schema: {yaml_json_schema}. Don't include additional text other than the object as it will be deserialized with pydantic_model.parse_raw",
+            "content": "\n".join(directions),
         }
 
         messages = [system_message]
@@ -71,8 +78,22 @@ class OpenAiMixin:
         # Add examples to the messages if provided
         if examples:
             for example in examples:
-                messages.append({"role": "user", "content": example["input"]})
-                messages.append({"role": "assistant", "content": example["output"]})
+                input_ = example["input"]
+                output = example["output"]
+
+                if isinstance(output, str):
+                    try:
+                        output = cls.parse_raw(output).json()
+                    except ValidationError as e:
+                        class_name = cls.__name__
+                        raise e from ValueError(
+                            f"output ({output}) should be a json representation of {class_name} or an instance of it"
+                        )
+                else:
+                    output = output.json()
+
+                messages.append({"role": "user", "content": input_})
+                messages.append({"role": "assistant", "content": output})
 
         prompt = doc.format(**kwargs)
 
@@ -97,10 +118,17 @@ class OpenAiMixin:
                 obj = json.loads(content)
             except Exception as e:
                 last_exception = e
-                error_msg = f"json.loads error: {e}"
+                error_msg = f"{e.__class__.__name__}: {e}"
                 logger.error(error_msg)
                 messages.append(
-                    {"role": "user", "content": f"{e.__class__.__name__}: {e}"}
+                    {
+                        "role": "user",
+                        "content": (
+                            error_msg
+                            + "\n"
+                            + "note: please don't apologize. simply return the correct json object"
+                        ),
+                    }
                 )
                 attempt += 1
                 continue
@@ -117,6 +145,7 @@ class OpenAiMixin:
                 attempt += 1
 
         if last_exception:
+            pprint(messages)
             raise last_exception
 
 

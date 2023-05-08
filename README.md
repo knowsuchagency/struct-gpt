@@ -80,7 +80,7 @@ print(
 )
 ```
 <details>
-<summary>outputs</summary>
+<summary><b>See Output</b></summary>
 
 ```json
 {
@@ -133,7 +133,11 @@ print(
 
 ## Improving reliability with examples
 
-`create` can accept a list of examples to guide the model and improve its accuracy. Each example is a dictionary containing an `input` and `output` key. The `input` is the user message and the `output` is the expected assistant message, which should be a valid instance of the schema serialized as a string.
+`create` can accept a list of examples to guide the model and improve its accuracy. 
+
+Each example is a dictionary containing an `input` and `output` key. 
+
+The `input` is an example input and the `output` is its expected output, which should be an instance of the model or its json string representation.
 
 In this example, we are providing the model with examples of positive and negative sentiments:
 
@@ -154,12 +158,13 @@ class SentimentSchema(OpenAiBase):
 
 examples = [
     {
-        "input": "this library is neat!",
-        "output": SentimentSchema(sentiment="1").json(),
+        "input": "don't touch that",
+        "output": '{"sentiment": "-1"}',
     },
     {
-        "input": "don't touch that",
-        "output": SentimentSchema(sentiment="-1").json(),
+        "input": "this library is neat!",
+        # the output can be an instance of the model
+        "output": SentimentSchema(sentiment="1"),
     },
 ]
 
