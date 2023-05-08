@@ -42,7 +42,9 @@ outputs:
 }
 ```
 
-Your classes can reference one another. You can also use the `OpenAiMixin` to add functionality to your own classes.
+Classes can reference one another. 
+
+You can also use the `OpenAiMixin` to add functionality to existing Pydantic classes.
 
 ```python
 from struct_gpt import OpenAiBase, OpenAiMixin
@@ -60,7 +62,6 @@ class SentimentSchema(OpenAiBase):
     sentiment: str = Field(description="Either -1, 0, or 1.")
 
 
-# you can use the OpenAiMixin to add functionality to your own classes
 class SentimentAnalysis(BaseModel, OpenAiMixin):
     """
     Determine the sentiment of each word in the following: {text}
