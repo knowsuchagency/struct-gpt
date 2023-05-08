@@ -29,11 +29,14 @@ class SentimentSchema(OpenAiBase):
 
     {content}
     """
+    # 👆this becomes the prompt
 
     sentiment: str = Field(description="Either -1, 0, or 1.")
 
 
-print(SentimentSchema.from_openai(content="I love pizza!").json())
+result = SentimentSchema.from_openai(content="I love pizza!").json()
+                                     # 👆this goes in the prompt
+print(result)
 ```
 outputs:
 ```json
