@@ -23,7 +23,7 @@ class SentimentSchema(OpenAiBase):
 
 
 result = SentimentSchema.from_openai(content="I love pizza!").json()
-                                     # 👆this goes in the prompt
+                                     # 👆this ends up in the prompt
 print(result)
 ```
 outputs:
