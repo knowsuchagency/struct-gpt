@@ -161,6 +161,11 @@ class TestExamplesHandling:
         instance = self.TestSchema.from_openai(full_name="Alex Boss", examples=examples)
         assert instance.first_name == "Alex"
 
+    def test_valid_dict(self):
+        examples = [{"input": self.example_input, "output": {"first_name": "Sam"}}]
+        instance = self.TestSchema.from_openai(full_name="Alex Boss", examples=examples)
+        assert instance.first_name == "Alex"
+
     def test_non_apology(self):
         """
         Test that the model doesn't prefix failed attempts to return json with some version of 'I apologize...'

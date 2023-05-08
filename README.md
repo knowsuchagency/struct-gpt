@@ -138,7 +138,7 @@ print(
 
 Each example is a dictionary containing an `input` and `output` key. 
 
-The `input` is an example input and the `output` is its expected output, which should be an instance of the model or its json string representation.
+The `input` is an example input and the `output` is its expected output, which should be an instance of the model, a dictionary, or its json string representation,.
 
 In this example, we are providing the model with examples of positive and negative sentiments:
 
@@ -159,12 +159,15 @@ class SentimentSchema(OpenAiBase):
 
 examples = [
     {
+        "input": "I love the beach!",
+        "output": {"sentiment": "1"},
+    },
+    {
         "input": "don't touch that",
         "output": '{"sentiment": "-1"}',
     },
     {
         "input": "this library is neat!",
-        # the output can be an instance of the model
         "output": SentimentSchema(sentiment="1"),
     },
 ]

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Example(TypedDict):
     input: str
-    output: str | Model
+    output: str | dict | Model
 
 
 class OpenAiMixin:
@@ -89,6 +89,8 @@ class OpenAiMixin:
                         raise e from ValueError(
                             f"output ({output}) should be a json representation of {class_name} or an instance of it"
                         )
+                elif isinstance(output, dict):
+                    output = cls.parse_obj(output).json()
                 else:
                     output = output.json()
 
