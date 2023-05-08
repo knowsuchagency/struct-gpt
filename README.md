@@ -1,22 +1,10 @@
 # struct-gpt
 
-
 [![codecov](https://codecov.io/gh/knowsuchagency/struct-gpt/branch/main/graph/badge.svg?token=TMUQNTCTDI)](https://codecov.io/gh/knowsuchagency/struct-gpt)
 ![PyPI](https://img.shields.io/pypi/v/struct-gpt)
 
-## Features
 
-* Easy creation of custom models using the OpenAI API
-* Integration with Pydantic for model validation and serialization
-* Flexible configuration with retries and temperature settings
-
-## Usage
-
-`pip install struct-gpt`
-
----
-
-Template variables in the class' docstring are replaced with the keyword arguments passed to `from_openai`.
+Get structured output from LLM's.
 
 ```python
 from struct_gpt import OpenAiBase
@@ -45,9 +33,22 @@ outputs:
 }
 ```
 
-Classes can reference one another. 
+## Features
 
-You can also use the `OpenAiMixin` to add functionality to existing Pydantic classes.
+* Easy creation of custom models using the OpenAI API
+* Integration with Pydantic for model validation and serialization
+* Flexible configuration with retries and temperature settings
+
+## Installation
+
+`pip install struct-gpt`
+
+
+## Usage
+
+* Template variables in the class' docstring are replaced with the keyword arguments passed to `from_openai`
+* Classes can reference one another
+* You can use the `OpenAiMixin` to add functionality to existing Pydantic classes
 
 ```python
 from struct_gpt import OpenAiBase, OpenAiMixin
@@ -135,15 +136,13 @@ print(
 
 </details>
 
-## Improving reliability with examples
+### Improving reliability with examples
 
 `create` can accept a list of examples to guide the model and improve its accuracy. 
 
 Each example is a dictionary containing an `input` and `output` key. 
 
-The `input` is an example input and the `output` is its expected output, which should be an instance of the model, a dictionary, or its json string representation,.
-
-In this example, we are providing the model with examples of positive and negative sentiments:
+`output` should be an instance of the model, a dictionary, or its json string representation,.
 
 ```python
 from struct_gpt import OpenAiBase
