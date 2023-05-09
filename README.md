@@ -138,7 +138,7 @@ print(
 
 ### Improving reliability with examples
 
-`create` can accept a list of examples to guide the model and improve its accuracy. 
+`from_openai` can accept a list of examples to guide the model and improve its accuracy. 
 
 Each example is a dictionary containing an `input` and `output` key. 
 
