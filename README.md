@@ -57,12 +57,6 @@ from typing import Mapping
 
 
 class SentimentSchema(OpenAiBase):
-    """
-    Determine the sentiment of the given text:
-
-    {content}
-    """
-
     sentiment: str = Field(description="Either -1, 0, or 1.")
 
 
