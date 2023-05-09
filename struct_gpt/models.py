@@ -1,7 +1,6 @@
 import io
 import json
 import logging
-from pprint import pprint
 from typing import TypeVar, TypedDict
 
 import openai
@@ -147,7 +146,6 @@ class OpenAiMixin:
                 attempt += 1
 
         if last_exception:
-            pprint(messages)
             raise last_exception
 
 
