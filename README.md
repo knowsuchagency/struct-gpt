@@ -49,6 +49,9 @@ outputs:
 * Template variables in the class' docstring are replaced with the keyword arguments passed to `from_openai`
 * Classes can reference one another
 * You can use the `OpenAiMixin` to add functionality to existing Pydantic classes
+* Requires `openai>=1.0`. By default `from_openai` builds an `openai.OpenAI()` client, which reads `OPENAI_API_KEY` from the environment. Pass `client=` to use your own (e.g. `AzureOpenAI` or a custom `base_url`)
+* JSON mode (`response_format={"type": "json_object"}`) is on by default. Pass `json_mode=False` for models that don't support it
+* The default model is `gpt-4o-mini`; pass `model=` to change it
 
 ```python
 from struct_gpt import OpenAiBase, OpenAiMixin

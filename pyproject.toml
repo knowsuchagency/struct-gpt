@@ -7,13 +7,13 @@ dev = [
 ]
 [project]
 name = "struct-gpt"
-version = "2.2.7"
+version = "3.0.0"
 description = "structured llm outputs"
 authors = [
     {name = "Stephan Fitzpatrick", email = "knowsuchagency@gmail.com"},
 ]
 dependencies = [
-    "openai>=0.27.6",
+    "openai>=1.0.0",
     "pydantic>=1.10.7",
     "ruamel-yaml>=0.17.24",
 ]
