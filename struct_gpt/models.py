@@ -19,14 +19,43 @@ class Example(TypedDict):
     output: str | dict | Model
 
 
+# Small shims so the mixin works with both pydantic v1 and v2.
+
+
+def _json_schema(cls) -> dict:
+    if hasattr(cls, "model_json_schema"):
+        return cls.model_json_schema()
+    return json.loads(cls.schema_json())
+
+
+def _validate_json(cls, data: str):
+    if hasattr(cls, "model_validate_json"):
+        return cls.model_validate_json(data)
+    return cls.parse_raw(data)
+
+
+def _validate(cls, obj):
+    if hasattr(cls, "model_validate"):
+        return cls.model_validate(obj)
+    return cls.parse_obj(obj)
+
+
+def _dump_json(instance) -> str:
+    if hasattr(instance, "model_dump_json"):
+        return instance.model_dump_json()
+    return instance.json()
+
+
 class OpenAiMixin:
     @classmethod
     def from_openai(
         cls: Model,
         temperature=0,
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         retries=2,
         examples: list[Example] = None,
+        client: "openai.OpenAI | None" = None,
+        json_mode: bool = True,
         **kwargs,
     ) -> Model:
         """
@@ -37,6 +66,10 @@ class OpenAiMixin:
             model: The specific OpenAI model to use.
             retries: Number of times to retry in case of failure.
             examples: List of input-output example pairs. Useful to improve the model's accuracy.
+            client: An `openai.OpenAI` client. Defaults to `openai.OpenAI()`, which reads
+                `OPENAI_API_KEY` (and friends) from the environment.
+            json_mode: Ask the API for a JSON object (`response_format={"type": "json_object"}`).
+                Set to False for models that don't support JSON mode.
             **kwargs: Used to format the model's docstring.
 
         Returns:
@@ -56,8 +89,7 @@ class OpenAiMixin:
 
         # Convert the JSON schema to YAML since it takes up fewer tokens
         with io.StringIO() as fp:
-            json_schema = json.loads(cls.schema_json())
-            yaml.dump(json_schema, fp)
+            yaml.dump(_json_schema(cls), fp)
             yaml_json_schema = fp.getvalue()
 
         # Set up the system message to guide the assistant
@@ -82,16 +114,16 @@ class OpenAiMixin:
 
                 if isinstance(output, str):
                     try:
-                        output = cls.parse_raw(output).json()
+                        output = _dump_json(_validate_json(cls, output))
                     except ValidationError as e:
                         class_name = cls.__name__
                         raise e from ValueError(
                             f"output ({output}) should be a json representation of {class_name} or an instance of it"
                         )
                 elif isinstance(output, dict):
-                    output = cls.parse_obj(output).json()
+                    output = _dump_json(_validate(cls, output))
                 else:
-                    output = output.json()
+                    output = _dump_json(output)
 
                 messages.append({"role": "user", "content": input_})
                 messages.append({"role": "assistant", "content": output})
@@ -105,22 +137,29 @@ class OpenAiMixin:
             }
         )
 
+        if client is None:
+            client = openai.OpenAI()
+
+        request = {"model": model, "temperature": temperature}
+        if json_mode:
+            request["response_format"] = {"type": "json_object"}
+
         attempt = 0
         last_exception = None
 
         # Retry the specified number of times in case of failure
         while attempt <= retries:
+            content = None
             try:
-                content = openai.ChatCompletion.create(
-                    messages=messages,
-                    temperature=temperature,
-                    model=model,
-                )["choices"][0]["message"]["content"]
+                response = client.chat.completions.create(messages=messages, **request)
+                content = response.choices[0].message.content
                 obj = json.loads(content)
             except Exception as e:
                 last_exception = e
                 error_msg = f"{e.__class__.__name__}: {e}"
                 logger.error(error_msg)
+                if content is not None:
+                    messages.append({"role": "assistant", "content": content})
                 messages.append(
                     {
                         "role": "user",
@@ -135,11 +174,12 @@ class OpenAiMixin:
                 continue
 
             try:
-                return cls.parse_obj(obj)
+                return _validate(cls, obj)
             except ValidationError as e:
                 last_exception = e
                 error_msg = f"pydantic.ValidationError: {e}"
                 logger.error(error_msg)
+                messages.append({"role": "assistant", "content": content})
                 messages.append(
                     {"role": "user", "content": f"{e.__class__.__name__}: {e}"}
                 )
